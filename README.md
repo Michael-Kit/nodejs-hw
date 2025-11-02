@@ -1,4 +1,4 @@
-# Homework 01 – Express API
+# 📘 Homework 01 – Express API
 
 ## 🛠️ Підготовка середовища
 
@@ -10,8 +10,7 @@
 node --version
 ```
 
-Якщо побачите щось на кшталт `v18.17.0` або новішу — Node.js встановлено.
-Якщо отримаєте `command not found: node`, завантажте LTS-версію з [офіційного сайту Node.js](https://nodejs.org/en).
+Очікувана відповідь: `v18.17.0` або новіша. Якщо отримаєте `command not found: node`, завантажте LTS-версію з [офіційного сайту Node.js](https://nodejs.org/en).
 
 ### 2. 📦 Перевірка npm
 
@@ -25,8 +24,6 @@ npm --version
 
 ## 🚀 Ініціалізація проєкту
 
-Можна обрати один із варіантів:
-
 ### Варіант 1 — локально
 
 ```bash
@@ -36,17 +33,11 @@ cd nodejs-hw
 
 ### Варіант 2 — через GitHub
 
-- Створіть репозиторій `nodejs-hw`
-- Склонуйте його:
-  ```bash
-  git clone <URL>
-  cd nodejs-hw
-  ```
-- Відкрийте у VS Code
-- Створіть гілку:
-  ```bash
-  git checkout -b 01-express
-  ```
+```bash
+git clone <URL>
+cd nodejs-hw
+git checkout -b 01-express
+```
 
 ### Ініціалізація npm
 
@@ -58,51 +49,89 @@ npm init -y
 
 ---
 
-## 🔁 Nodemon
+## 📁 Структура проєкту
 
-Щоб автоматично перезапускати сервер після змін:
+```
+NODEJS-HW/
+├── node_modules/
+├── src/
+│   └── server.js
+├── .editorconfig
+├── .env
+├── .gitignore
+├── .prettierrc
+├── eslint.config.mjs
+├── package-lock.json
+├── package.json
+└── README.md
+```
+
+> Така структура дозволяє чітко розділити логіку додатка (`src`) від конфігураційних та службових файлів у корені.
+
+---
+
+## 🔧 Залежності
+
+Встановіть необхідні пакети:
 
 ```bash
+npm install express cors helmet pino-http pino-pretty dotenv
 npm install -D nodemon
 ```
+
+---
+
+## 🔁 Скрипти запуску
 
 У `package.json` додайте:
 
 ```json
 "type": "module",
 "scripts": {
-  "dev": "nodemon src/index.js"
+  "start": "node src/server.js",
+  "dev": "nodemon src/server.js"
 }
 ```
 
----
+- `start` — для продакшену (наприклад, Render).
+- `dev` — для локальної розробки з автоматичним перезапуском.
 
-## 📁 Структура проєкту
-
-Структура проєкту
-src/index.js — стартовий файл сервера
-
-.env — змінні середовища
-
-.gitignore, .editorconfig, .prettierrc, eslint.config.mjs — конфігураційні файли
-
-package.json, package-lock.json — залежності та скрипти
-
-- Створіть папку `src`
-- У ній — файл `server.js`
-- Запуск:
-
-```bash
-npm run dev
-```
+> ⚠️ Без скрипта `"start"` Render не зможе запустити сервер і видасть помилку `Missing script: "start"`.
 
 ---
 
-## ⚙️ EditorConfig
+## 🌐 Middleware
 
-Створіть файл `.editorconfig`:
+У `src/server.js` підключено:
 
-```
+- `express.json()` — для обробки JSON у запитах
+- `cors()` — для дозволу запитів з інших доменів
+- `helmet()` — для захисту HTTP-заголовків
+- `pino-http` — для логування запитів у консоль
+
+---
+
+## 🧪 Реалізовані маршрути
+
+- `GET /` — базовий маршрут
+- `GET /notes` — повертає всі нотатки
+- `GET /notes/:noteId` — повертає нотатку за ID
+- `GET /test-error` — симулює помилку сервера
+
+---
+
+## 🚨 Обробка помилок
+
+- Middleware для 404 — відповідає `{ message: 'Route not found' }`
+- Middleware для 500 — відповідає з повідомленням про помилку
+
+---
+
+## ⚙️ Конфігураційні файли
+
+### `.editorconfig`
+
+```ini
 root = true
 
 [*]
@@ -114,11 +143,7 @@ indent_size = 2
 trim_trailing_whitespace = true
 ```
 
----
-
-## 🎨 Prettier
-
-Створіть файл `.prettierrc`:
+### `.prettierrc`
 
 ```json
 {
@@ -134,28 +159,7 @@ trim_trailing_whitespace = true
 }
 ```
 
----
-
-## 🔍 ESLint
-
-Ініціалізація:
-
-```bash
-npm init @eslint/config@latest
-```
-
-Виберіть:
-
-- What to lint: `javascript`
-- Use ESLint for: `problems`
-- Modules: `esm`
-- Framework: `none`
-- TypeScript: `No`
-- Where code runs: `node`
-- Install dependencies: `Yes`
-- Package manager: `npm`
-
-### Конфігурація `eslint.config.mjs`:
+### `eslint.config.mjs`
 
 ```js
 import js from '@eslint/js';
@@ -167,7 +171,9 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs}'],
     plugins: { js },
     extends: ['js/recommended'],
-    languageOptions: { globals: globals.node },
+    languageOptions: {
+      globals: globals.node,
+    },
     rules: {
       semi: 'error',
       'no-unused-vars': ['error', { args: 'none' }],
@@ -179,11 +185,44 @@ export default defineConfig([
 
 ---
 
-## 📦 Залежності
+## 🌍 Змінні середовища
 
-```bash
-npm install express
-npm install cors
-npm install pino-http pino-pretty
-npm install dotenv
+Створіть `.env`:
+
 ```
+PORT=3000
+NODE_ENV=development
+```
+
+Note:
+"NODE_ENV визначає режим роботи додатка. У development — більше логів і гнучкіша поведінка. У production — безпечніша, мінімалістична."
+
+У `server.js`:
+
+```js
+const PORT = process.env.PORT ?? 3000;
+```
+
+---
+
+## 🚢 Деплой на Render
+
+1. Створіть сервіс типу **Web Service**
+2. Підключіть GitHub-репозиторій
+3. У `package.json` має бути скрипт `"start"`
+4. Перевірте, що `.env` додано в Render Environment
+5. Після деплою — перевірте всі маршрути вручну
+
+> ✅ Успішний деплой підтверджується логом `Server is running on port 3000`
+
+---
+
+## ✅ Критерії приймання
+
+- Репозиторій `nodejs-hw`, гілка `01-express`
+- Задеплоєний проєкт на Render
+- Всі маршрути працюють
+- Структура відповідає вимогам
+- Код без помилок
+
+---
