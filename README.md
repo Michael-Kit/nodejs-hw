@@ -79,6 +79,15 @@ npm install -D nodemon
 
 ## 📁 Структура проєкту
 
+Структура проєкту
+src/index.js — стартовий файл сервера
+
+.env — змінні середовища
+
+.gitignore, .editorconfig, .prettierrc, eslint.config.mjs — конфігураційні файли
+
+package.json, package-lock.json — залежності та скрипти
+
 - Створіть папку `src`
 - У ній — файл `server.js`
 - Запуск:
