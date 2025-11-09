@@ -1,8 +1,8 @@
-// src/routes/studentsRoutes.js
+// src/routes/notesRoutes.js
 
 import { Router } from 'express';
 import {
-  getNotes,
+  getAllNotes,
   getNoteById,
   createNote,
   deleteNote,
@@ -11,11 +11,7 @@ import {
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Welcome to the Notes API' });
-});
-
-router.get('/notes', getNotes);
+router.get('/notes', getAllNotes);
 
 router.get('/notes/:noteId', getNoteById);
 
