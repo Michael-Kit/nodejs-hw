@@ -7,20 +7,53 @@ import createHttpError from 'http-errors';
 
 // Отримати всі нотатки
 export const getAllNotes = async (req, res) => {
-  const notes = await Note.find();
-  res.status(200).json(notes);
-};
+  // Отримуємо параметри пагінаціі
+  const {
+    page = 1,
+    perPage = 10,
+    tag,
+    search,
+    sortBy = '_id',
+    sortOrder = 'asc',
+  } = req.query;
+  const skip = (page - 1) * perPage;
+  // Створюємо базовий запит
+  const notesQuery = Note.find();
+  // Текстовий пошук по name (працює лише якщо створено текстовий індекс)
+  if (search) {
+    notesQuery.where({
+      $text: { $search: search },
+    });
+  }
+  // Будуємо фільтр за тегом
+  if (tag) {
+    notesQuery.where({ tag });
+  }
+  // Виконуємо одразу два запити паралельно
+  const [totalItems, notes] = await Promise.all([
+    notesQuery.clone().countDocuments(),
+    notesQuery
+      .skip(skip)
+      .limit(perPage)
+      .sort({ [sortBy]: sortOrder }),
+  ]);
+  // Обчисляємо загальну кількість "сторінок"
 
+  const totalPages = Math.ceil(totalItems / perPage);
+
+  res.status(200).json({
+    page,
+    perPage,
+    totalItems,
+    totalPages,
+    notes,
+  });
+};
 // Отримати одну нотатку за id
 export const getNoteById = async (req, res, next) => {
   const { noteId } = req.params;
   const note = await Note.findById(noteId);
-  // Код що був до цього
-
-  // if (!note) {
-  //   return res.status(404).json({ message: 'Note not found' });
-  // }
-
+  // Додаємо базову обробку помилки замість res.status(404)
   if (!note) {
     next(createHttpError(404, 'Note not found'));
     return;

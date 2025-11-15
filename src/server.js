@@ -12,11 +12,12 @@ import { notFoundHandler } from './middleware/notFoundHandler.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 import notesRouters from './routes/notesRoutes.js';
+import { errors } from 'celebrate';
 
 const app = express();
 
 // Використовуємо значення з .env або дефолтний порт 3000
-const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.PORT ?? 3030;
 
 // Middleware
 // Глобальні middleware
@@ -28,6 +29,8 @@ app.use(helmet());
 // підключаємо групу маршрутів нотаків
 app.use(notesRouters);
 
+// Celebrate validation errors
+app.use(errors());
 // 404 — якщо маршрут не знайдено
 app.use(notFoundHandler);
 
