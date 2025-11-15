@@ -30,7 +30,7 @@ export const getAllNotes = async (req, res) => {
     notesQuery.where({ tag });
   }
   // Виконуємо одразу два запити паралельно
-  const [totalItems, notes] = await Promise.all([
+  const [totalNotes, notes] = await Promise.all([
     notesQuery.clone().countDocuments(),
     notesQuery
       .skip(skip)
@@ -39,12 +39,12 @@ export const getAllNotes = async (req, res) => {
   ]);
   // Обчисляємо загальну кількість "сторінок"
 
-  const totalPages = Math.ceil(totalItems / perPage);
+  const totalPages = Math.ceil(totalNotes / perPage);
 
   res.status(200).json({
     page,
     perPage,
-    totalItems,
+    totalNotes,
     totalPages,
     notes,
   });
