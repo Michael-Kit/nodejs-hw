@@ -1,228 +1,141 @@
-# 📘 Homework 01 – Express API
+📘 Homework 04 – Auth, Sessions & Private Notes
+🛠️ Підготовка середовища
+Node.js v18.17.0 або новіша
 
-## 🛠️ Підготовка середовища
+npm (встановлюється разом із Node.js)
 
-Перед початком роботи переконайтесь, що на вашому комп’ютері встановлено Node.js.
+MongoDB (локально або Atlas)
 
-### 1. Перевірка Node.js
+🚀 Ініціалізація проєкту
 
-```bash
-node --version
-```
-
-Очікувана відповідь: `v18.17.0` або новіша. Якщо отримаєте `command not found: node`, завантажте LTS-версію з [офіційного сайту Node.js](https://nodejs.org/en).
-
-### 2. 📦 Перевірка npm
-
-```bash
-npm --version
-```
-
-Якщо команда не працює — перевстановіть Node.js, переконавшись, що npm включено.
-
----
-
-## 🚀 Ініціалізація проєкту
-
-### Варіант 1 — локально
-
-```bash
-mkdir nodejs-hw
-cd nodejs-hw
-```
-
-### Варіант 2 — через GitHub
-
-```bash
-git clone <URL>
-cd nodejs-hw
-git checkout -b 01-express
-```
-
-### Ініціалізація npm
-
-```bash
-npm init -y
-```
-
-З’явиться файл `package.json` із базовою інформацією про проєкт.
-
----
-
-## 📁 Структура проєкту
-
-```
+git switch -c 04-auth
+або альтернативно як :
+git checkout -b 04-auth
+npm install
+📁 Структура проєкту (після Homework 04-auth)
+Code
 NODEJS-HW/
-├── node_modules/
 ├── src/
-│   └── server.js
-├── .editorconfig
+│ ├── constants/
+│ │ ├── tags.js
+│ │ └── time.js # ✅ новий файл
+│ ├── controllers/
+│ │ ├── authController.js # ✅ новий контролер
+│ │ └── notesController.js
+│ ├── db/
+│ │ └── connectMongoDB.js
+│ ├── middleware/
+│ │ ├── authenticate.js # ✅ новий middleware
+│ │ ├── errorHandler.js
+│ │ ├── logger.js
+│ │ └── notFoundHandler.js
+│ ├── models/
+│ │ ├── note.js
+│ │ ├── session.js # ✅ нова модель
+│ │ └── user.js # ✅ нова модель
+│ ├── routes/
+│ │ ├── authRoutes.js # ✅ новий роут
+│ │ └── notesRoutes.js
+│ ├── services/
+│ │ └── auth.js # ✅ новий сервіс
+│ ├── validations/
+│ │ ├── authValidation.js # ✅ нова валідація
+│ │ └── notesValidation.js
+│ └── server.js
 ├── .env
-├── .gitignore
-├── .prettierrc
-├── eslint.config.mjs
-├── package-lock.json
 ├── package.json
 └── README.md
-```
+🟥 У цьому завданні були додані нові файли: user.js, session.js, authController.js, authRoutes.js, auth.js, authenticate.js, time.js, authValidation.js.
 
-> Така структура дозволяє чітко розділити логіку додатка (`src`) від конфігураційних та службових файлів у корені.
+🔧 Основні залежності
+встановити bcrypt командою:
 
----
+npm i bcrypt
 
-## 🔧 Залежності
+встановити cookie-parser командою:
 
-Встановіть необхідні пакети:
+npm i cookie-parser
 
-```bash
-npm install express cors helmet pino-http pino-pretty dotenv
-npm install -D nodemon
-```
+вже встановлені:
 
----
+express, cors, helmet
 
-## 🔁 Скрипти запуску
+mongoose
 
-У `package.json` додайте:
+celebrate, joi
 
-```json
-"type": "module",
-"scripts": {
-  "start": "node src/server.js",
-  "dev": "nodemon src/server.js"
-}
-```
+dotenv
 
-- `start` — для продакшену (наприклад, Render).
-- `dev` — для локальної розробки з автоматичним перезапуском.
+nodemon (dev)
 
-> ⚠️ Без скрипта `"start"` Render не зможе запустити сервер і видасть помилку `Missing script: "start"`.
+🌍 Змінні середовища
+Створіть файл .env у корені проєкту. У ньому мають бути змінні:
 
----
-
-## 🌐 Middleware
-
-У `src/server.js` підключено:
-
-- `express.json()` — для обробки JSON у запитах
-- `cors()` — для дозволу запитів з інших доменів
-- `helmet()` — для захисту HTTP-заголовків
-- `pino-http` — для логування запитів у консоль
-
----
-
-## 🧪 Реалізовані маршрути
-
-- `GET /` — базовий маршрут
-- `GET /notes` — повертає всі нотатки
-- `GET /notes/:noteId` — повертає нотатку за ID
-- `GET /test-error` — симулює помилку сервера
-
----
-
-## 🚨 Обробка помилок
-
-- Middleware для 404 — відповідає `{ message: 'Route not found' }`
-- Middleware для 500 — відповідає з повідомленням про помилку
-
----
-
-## ⚙️ Конфігураційні файли
-
-### `.editorconfig`
-
-```ini
-root = true
-
-[*]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-indent_style = space
-indent_size = 2
-trim_trailing_whitespace = true
-```
-
-### `.prettierrc`
-
-```json
-{
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 80,
-  "tabWidth": 2,
-  "useTabs": false,
-  "arrowParens": "always",
-  "bracketSpacing": true,
-  "endOfLine": "lf"
-}
-```
-
-### `eslint.config.mjs`
-
-```js
-import js from '@eslint/js';
-import globals from 'globals';
-import { defineConfig } from 'eslint/config';
-
-export default defineConfig([
-  {
-    files: ['**/*.{js,mjs,cjs}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: {
-      globals: globals.node,
-    },
-    rules: {
-      semi: 'error',
-      'no-unused-vars': ['error', { args: 'none' }],
-      'no-undef': 'error',
-    },
-  },
-]);
-```
-
----
-
-## 🌍 Змінні середовища
-
-Створіть `.env`:
-
-```
-PORT=3000
+Code
+PORT=3030
+MONGO_URL=<your_mongodb_connection_string>
 NODE_ENV=development
-```
+⚠️ Значення MONGO_URL не публікуйте у README чи репозиторії. Воно має бути доступне лише локально або у Render Environment.
 
-Note:
-"NODE_ENV визначає режим роботи додатка. У development — більше логів і гнучкіша поведінка. У production — безпечніша, мінімалістична."
+🧑‍💻 Реалізовані модулі
+Моделі
+User: email, password (мін. 8 символів), username (trim), timestamps, toJSON (без пароля).
 
-У `server.js`:
+Session: userId, accessToken, refreshToken, accessTokenValidUntil, refreshTokenValidUntil.
 
-```js
-const PORT = process.env.PORT ?? 3000;
-```
+Note: title, content, tag, userId (прив’язка до User), текстовий індекс.
 
----
+Middleware
+authenticate: перевірка accessToken у cookies, пошук сесії, перевірка терміну дії, додавання req.user.
 
-## 🚢 Деплой на Render
+errorHandler, notFoundHandler, logger.
 
-1. Створіть сервіс типу **Web Service**
-2. Підключіть GitHub-репозиторій
-3. У `package.json` має бути скрипт `"start"`
-4. Перевірте, що `.env` додано в Render Environment
-5. Після деплою — перевірте всі маршрути вручну
+Сервіси
+auth.js: createSession, setSessionCookies.
 
-> ✅ Успішний деплой підтверджується логом `Server is running on port 3000`
+Валідація
+authValidation.js: registerUserSchema, loginUserSchema.
 
----
+notesValidation.js: перевірка даних нотаток.
 
-## ✅ Критерії приймання
+🔐 Реалізовані маршрути
+Auth
+POST /auth/register — реєстрація користувача
 
-- Репозиторій `nodejs-hw`, гілка `01-express`
-- Задеплоєний проєкт на Render
-- Всі маршрути працюють
-- Структура відповідає вимогам
-- Код без помилок
+POST /auth/login — логін
 
----
+POST /auth/logout — вихід
+
+POST /auth/refresh — оновлення сесії
+
+Notes (приватні)
+GET /notes — всі нотатки користувача
+
+GET /notes/:noteId — нотатка за ID
+
+POST /notes — створення нотатки
+
+PATCH /notes/:noteId — оновлення нотатки
+
+DELETE /notes/:noteId — видалення нотатки
+
+🚨 Обробка помилок
+404 — маршрут не знайдено
+
+401 — проблеми з токенами/сесіями
+
+500 — серверні помилки
+
+🚢 Деплой на Render
+Створити Web Service
+
+Підключити GitHub-репозиторій (гілка 04-auth)
+
+Додати .env у Render Environment
+
+Перевірити роботу маршрутів через Postman
+
+✅ Успішний деплой підтверджується логом:
+
+Code
+Server is running on port 3030
