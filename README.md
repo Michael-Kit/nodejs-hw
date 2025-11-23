@@ -1,228 +1,145 @@
-# 📘 Homework 01 – Express API
+# 📘 Homework 03 – Validation, Pagination & Search
 
 ## 🛠️ Підготовка середовища
 
-Перед початком роботи переконайтесь, що на вашому комп’ютері встановлено Node.js.
-
-### 1. Перевірка Node.js
-
-```bash
-node --version
-```
-
-Очікувана відповідь: `v18.17.0` або новіша. Якщо отримаєте `command not found: node`, завантажте LTS-версію з [офіційного сайту Node.js](https://nodejs.org/en).
-
-### 2. 📦 Перевірка npm
-
-```bash
-npm --version
-```
-
-Якщо команда не працює — перевстановіть Node.js, переконавшись, що npm включено.
-
----
+- Node.js v18.17.0 або новіша
+- npm
+- MongoDB Atlas (або локальний MongoDB)
 
 ## 🚀 Ініціалізація проєкту
 
-### Варіант 1 — локально
-
 ```bash
-mkdir nodejs-hw
-cd nodejs-hw
+git switch -c 03-validation
+npm install
 ```
 
-### Варіант 2 — через GitHub
-
-```bash
-git clone <URL>
-cd nodejs-hw
-git checkout -b 01-express
-```
-
-### Ініціалізація npm
-
-```bash
-npm init -y
-```
-
-З’явиться файл `package.json` із базовою інформацією про проєкт.
-
----
-
-## 📁 Структура проєкту
+## 📁 Структура проєкту (після Homework 03)
 
 ```
 NODEJS-HW/
-├── node_modules/
 ├── src/
-│   └── server.js
-├── .editorconfig
-├── .env
-├── .gitignore
-├── .prettierrc
-├── eslint.config.mjs
-├── package-lock.json
+│   ├── constants/
+│   │   └── tags.js              # ✅ новий файл зі списком тегів
+│   ├── controllers/
+│   │   └── notesController.js   # CRUD + пошук + пагінація
+│   ├── db/
+│   │   └── connectMongoDB.js
+│   ├── middleware/
+│   │   ├── logger.js
+│   │   ├── notFoundHandler.js
+│   │   └── errorHandler.js
+│   ├── models/
+│   │   └── note.js              # модель Note з індексом для пошуку
+│   ├── routes/
+│   │   └── notesRoutes.js       # маршрути з celebrate-валідацією
+│   ├── validations/
+│   │   └── notesValidation.js   # ✅ новий файл зі схемами Joi
+│   └── server.js                # головний файл, підключає MongoDB та middleware
+├── .env                         # PORT=3030, MONGO_URL
 ├── package.json
 └── README.md
 ```
 
-> Така структура дозволяє чітко розділити логіку додатка (`src`) від конфігураційних та службових файлів у корені.
-
 ---
 
-## 🔧 Залежності
-
-Встановіть необхідні пакети:
+## 🔧 Основні залежності
 
 ```bash
-npm install express cors helmet pino-http pino-pretty dotenv
+npm install express cors mongoose dotenv pino-http http-errors celebrate joi helmet
 npm install -D nodemon
-```
-
----
-
-## 🔁 Скрипти запуску
-
-У `package.json` додайте:
-
-```json
-"type": "module",
-"scripts": {
-  "start": "node src/server.js",
-  "dev": "nodemon src/server.js"
-}
-```
-
-- `start` — для продакшену (наприклад, Render).
-- `dev` — для локальної розробки з автоматичним перезапуском.
-
-> ⚠️ Без скрипта `"start"` Render не зможе запустити сервер і видасть помилку `Missing script: "start"`.
-
----
-
-## 🌐 Middleware
-
-У `src/server.js` підключено:
-
-- `express.json()` — для обробки JSON у запитах
-- `cors()` — для дозволу запитів з інших доменів
-- `helmet()` — для захисту HTTP-заголовків
-- `pino-http` — для логування запитів у консоль
-
----
-
-## 🧪 Реалізовані маршрути
-
-- `GET /` — базовий маршрут
-- `GET /notes` — повертає всі нотатки
-- `GET /notes/:noteId` — повертає нотатку за ID
-- `GET /test-error` — симулює помилку сервера
-
----
-
-## 🚨 Обробка помилок
-
-- Middleware для 404 — відповідає `{ message: 'Route not found' }`
-- Middleware для 500 — відповідає з повідомленням про помилку
-
----
-
-## ⚙️ Конфігураційні файли
-
-### `.editorconfig`
-
-```ini
-root = true
-
-[*]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-indent_style = space
-indent_size = 2
-trim_trailing_whitespace = true
-```
-
-### `.prettierrc`
-
-```json
-{
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 80,
-  "tabWidth": 2,
-  "useTabs": false,
-  "arrowParens": "always",
-  "bracketSpacing": true,
-  "endOfLine": "lf"
-}
-```
-
-### `eslint.config.mjs`
-
-```js
-import js from '@eslint/js';
-import globals from 'globals';
-import { defineConfig } from 'eslint/config';
-
-export default defineConfig([
-  {
-    files: ['**/*.{js,mjs,cjs}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: {
-      globals: globals.node,
-    },
-    rules: {
-      semi: 'error',
-      'no-unused-vars': ['error', { args: 'none' }],
-      'no-undef': 'error',
-    },
-  },
-]);
 ```
 
 ---
 
 ## 🌍 Змінні середовища
 
-Створіть `.env`:
+Створіть файл `.env` у корені проєкту:
 
 ```
-PORT=3000
+PORT=3030
+MONGO_URL=<your_mongodb_connection_string>
 NODE_ENV=development
 ```
 
-Note:
-"NODE_ENV визначає режим роботи додатка. У development — більше логів і гнучкіша поведінка. У production — безпечніша, мінімалістична."
+---
 
-У `server.js`:
+## 🧑‍💻 Реалізовані модулі
 
-```js
-const PORT = process.env.PORT ?? 3000;
-```
+### Модель Note
+
+- `title` — обов’язковий рядок, `trim: true`
+- `content` — необов’язковий рядок, за замовчуванням `''`
+- `tag` — одне із значень із `src/constants/tags.js` (за замовчуванням `Todo`)
+- `timestamps: true` — автоматично додає `createdAt` та `updatedAt`
+- **Індекс**: `noteSchema.index({ title: 'text', content: 'text' })` для пошуку
+
+### Constants
+
+- `src/constants/tags.js` — список тегів: Work, Personal, Meeting, Shopping, Ideas, Travel, Finance, Health, Important, Todo
+
+### Валідація (celebrate/Joi)
+
+- `getAllNotesSchema` — перевірка `page`, `perPage`, `tag`, `search`
+- `noteIdSchema` — перевірка `noteId` через `isValidObjectId`
+- `createNoteSchema` — перевірка `title`, `content`, `tag`
+- `updateNoteSchema` — перевірка `noteId` + тіло запиту (мінімум одне поле)
+
+### Middleware
+
+- **logger.js** — логування HTTP-запитів через `pino-http`
+- **notFoundHandler.js** — відповідає `{ message: 'Route not found' }` для неіснуючих маршрутів
+- **errorHandler.js** — глобальна обробка помилок (500 або специфічні через `http-errors`)
+- **errors()** — обробка помилок від `celebrate`
+
+---
+
+## 🔐 Реалізовані маршрути
+
+### Notes
+
+- `GET /notes` — всі нотатки з підтримкою:
+  - `tag` — фільтрація за тегом
+  - `search` — пошук по `title` та `content`
+  - `page`, `perPage` — пагінація
+  - Відповідь:
+    ```json
+    {
+      "page": 1,
+      "perPage": 15,
+      "totalNotes": 150,
+      "totalPages": 10,
+      "notes": [
+        /* масив нотаток */
+      ]
+    }
+    ```
+- `GET /notes/:noteId` — нотатка за ID (404 якщо не знайдено)
+- `POST /notes` — створення нової нотатки
+- `PATCH /notes/:noteId` — оновлення існуючої нотатки
+- `DELETE /notes/:noteId` — видалення нотатки
+
+---
+
+## 🚨 Обробка помилок
+
+- 404 — маршрут не знайдено
+- 401 — помилки валідації
+- 500 — серверні помилки або специфічні через `http-errors`
 
 ---
 
 ## 🚢 Деплой на Render
 
-1. Створіть сервіс типу **Web Service**
-2. Підключіть GitHub-репозиторій
-3. У `package.json` має бути скрипт `"start"`
-4. Перевірте, що `.env` додано в Render Environment
-5. Після деплою — перевірте всі маршрути вручну
+1. Створіть Web Service
+2. Підключіть GitHub-репозиторій (гілка 03-validation)
+3. У Render Environment додайте змінні:
+   - `MONGO_URL`
+   - `NODE_ENV=production`
+4. Перевірте роботу маршрутів через Postman
 
-> ✅ Успішний деплой підтверджується логом `Server is running on port 3000`
+✅ Успішний деплой підтверджується логом:
 
----
-
-## ✅ Критерії приймання
-
-- Репозиторій `nodejs-hw`, гілка `01-express`
-- Задеплоєний проєкт на Render
-- Всі маршрути працюють
-- Структура відповідає вимогам
-- Код без помилок
-
----
+```
+✅ MongoDB connection established successfully
+Server is running on port 3030
+```
