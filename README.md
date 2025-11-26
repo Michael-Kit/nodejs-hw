@@ -126,10 +126,21 @@ DELETE /notes/:noteId — видалення нотатки
 
 500 — серверні помилки
 
+## ⚠️ Примітка для локальної розробки
+
+У файлі `src/utils/sendEmail.js` використовується тимчасовий фікс для обходу помилки
+`self-signed certificate in certificate chain`, яка виникає локально через антивірус:
+
+secure: false,
+tls: {
+rejectUnauthorized: false, // тимчасово для локальної розробки
+}
+! ВАЖЛИВО: Перед пушем у репозиторій або деплоєм на продакшн цей рядок треба видалити або закоментувати, щоб не знижувати рівень безпеки TLS‑з’єднання.
+
 🚢 Деплой на Render
 Створити Web Service
 
-Підключити GitHub-репозиторій (гілка 04-auth)
+Підключити GitHub-репозиторій (гілка 05-mail-and-img)
 
 Додати .env у Render Environment
 
@@ -139,3 +150,7 @@ DELETE /notes/:noteId — видалення нотатки
 
 Code
 Server is running on port 3030
+
+```
+
+```

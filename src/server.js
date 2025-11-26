@@ -14,6 +14,7 @@ import authRoutes from './routes/authRoutes.js';
 import notesRouters from './routes/notesRoutes.js';
 import { errors } from 'celebrate';
 import cookieParser from 'cookie-parser';
+import userRoutes from './routes/userRoutes.js';
 
 const app = express();
 
@@ -29,6 +30,9 @@ app.use(cookieParser());
 app.use(authRoutes);
 // підключаємо групу маршрутів нотаків
 app.use(notesRouters);
+
+// Додаємо раути користувача
+app.use(userRoutes);
 
 // Celebrate validation errors
 app.use(errors());
