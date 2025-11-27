@@ -180,7 +180,7 @@ export const resetPassword = async (req, res, next) => {
   // 2. Шукаємо користувача
 
   const user = await User.findOne({
-    _id: payload.sus,
+    _id: payload.sub,
     email: payload.email,
   });
   if (!user) {

@@ -28,7 +28,8 @@ app.use(cors()); // 3. Дозвіл для запитів з
 app.use(helmet());
 app.use(cookieParser());
 app.use(authRoutes);
-// підключаємо групу маршрутів нотаків
+
+// підключаємо групу маршрутів нотатків
 app.use(notesRouters);
 
 // Додаємо раути користувача
@@ -41,6 +42,8 @@ app.use(notFoundHandler);
 
 // Error — якщо під час запиту виникла помилка
 app.use(errorHandler);
+
+// підключення до MongoDB
 await connectMongoDB();
 
 app.listen(PORT, () => {

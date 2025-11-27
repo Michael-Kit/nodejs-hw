@@ -2,12 +2,14 @@
 
 import { Router } from 'express';
 import { celebrate } from 'celebrate';
+
 import {
   getAllNotesSchema,
   noteIdSchema,
   createNoteSchema,
   updateNoteSchema,
 } from '../validations/notesValidation.js';
+
 import {
   getAllNotes,
   getNoteById,
