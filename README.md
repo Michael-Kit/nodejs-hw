@@ -78,7 +78,7 @@ NODEJS-HW/
 ## 🌍 Змінні середовища
 
 ```env
-PORT=3030
+PORT=3000
 MONGO_URL=<your_mongodb_connection_string>
 NODE_ENV=development
 
@@ -149,5 +149,5 @@ rejectUnauthorized: process.env.NODE_ENV === 'production',
 ✅ Успішний деплой підтверджується логом:
 
 ```
-Server is running on port 3030
+Server is running on port 3000
 ```

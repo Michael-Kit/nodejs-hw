@@ -72,7 +72,7 @@ export const logoutUser = async (req, res) => {
   }
 
   res.clearCookie('sessionId');
-  res.clearCookie('sessionToken');
+  res.clearCookie('accessToken');
   res.clearCookie('refreshToken');
 
   res.status(204).send();
@@ -161,7 +161,7 @@ export const requestResetEmail = async (req, res, next) => {
 
   // Та сама "нейтральна" відповідь
   res.status(200).json({
-    message: 'If this email exists, a reset link has been sent',
+    message: 'Password reset email sent successfully',
   });
 };
 
@@ -199,6 +199,6 @@ export const resetPassword = async (req, res, next) => {
   // 5. Повертаємо успішну відповідь
 
   res.status(200).json({
-    message: 'Password reset successfully. Please log in again.',
+    message: 'Password reset email sent successfully',
   });
 };
