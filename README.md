@@ -1,156 +1,153 @@
-📘 Homework 04 – Auth, Sessions & Private Notes
-🛠️ Підготовка середовища
-Node.js v18.17.0 або новіша
+# 📘 Homework 05 – mail-and-img (Password Reset & User Avatar)
 
-npm (встановлюється разом із Node.js)
+## Загальна мета
 
-MongoDB (локально або Atlas)
+У цьому завданні ви продовжите розробку свого **Express-додатку** (у тому ж репозиторії `nodejs-hw`).
+Цього разу ви реалізуєте:
 
-🚀 Ініціалізація проєкту
+- 📩 Скидання паролю через пошту
+- 🖼️ Завантаження зображення для аватара користувача
 
-git switch -c 04-auth
-або альтернативно як :
-git checkout -b 04-auth
-npm install
-📁 Структура проєкту (після Homework 04-auth)
-Code
+Завдання виконано у гілці **`05-mail-and-img`**.
+
+---
+
+## 🛠️ Підготовка середовища
+
+- Node.js v18.17.0 або новіша
+- npm (встановлюється разом із Node.js)
+- MongoDB (локально або Atlas)
+- Brevo SMTP акаунт
+- Cloudinary акаунт
+
+---
+
+## 🚀 Ініціалізація проєкту
+
+Ця робота виконується на базі попереднього завдання (**Homework 04-auth**).
+Для реалізації нового функціоналу створено окрему гілку:
+
+```bash
+git switch -c 05-mail-and-img
+# або
+git checkout -b 05-mail-and-img
+
+npm install   # тільки якщо ви клонуєте репозиторій вперше
+```
+
+---
+
+## 📁 Структура проєкту (після Homework 05-mail-and-img)
+
+```
 NODEJS-HW/
 ├── src/
-│ ├── constants/
-│ │ ├── tags.js
-│ │ └── time.js # ✅ новий файл
-│ ├── controllers/
-│ │ ├── authController.js # ✅ новий контролер
-│ │ └── notesController.js
-│ ├── db/
-│ │ └── connectMongoDB.js
-│ ├── middleware/
-│ │ ├── authenticate.js # ✅ новий middleware
-│ │ ├── errorHandler.js
-│ │ ├── logger.js
-│ │ └── notFoundHandler.js
-│ ├── models/
-│ │ ├── note.js
-│ │ ├── session.js # ✅ нова модель
-│ │ └── user.js # ✅ нова модель
-│ ├── routes/
-│ │ ├── authRoutes.js # ✅ новий роут
-│ │ └── notesRoutes.js
-│ ├── services/
-│ │ └── auth.js # ✅ новий сервіс
-│ ├── validations/
-│ │ ├── authValidation.js # ✅ нова валідація
-│ │ └── notesValidation.js
-│ └── server.js
+│   ├── controllers/
+│   │   ├── authController.js   # ✅ доповнено requestResetEmail, resetPassword
+│   │   └── userController.js   # ✅ новий контролер для avatar
+│   ├── middleware/
+│   │   ├── multer.js           # ✅ новий middleware для upload
+│   ├── models/
+│   │   └── user.js             # ✅ нове поле avatar + pre("save")
+│   ├── routes/
+│   │   ├── authRoutes.js       # ✅ нові маршрути для reset email/password
+│   │   └── userRoutes.js       # ✅ новий маршрут для avatar
+│   ├── templates/
+│   │   └── reset-password-email.html # ✅ шаблон листа
+│   ├── utils/
+│   │   ├── sendEmail.js        # ✅ утиліта для SMTP
+│   │   └── saveFileToCloudinary.js # ✅ утиліта для Cloudinary
+│   └── server.js
 ├── .env
 ├── package.json
 └── README.md
-🟥 У цьому завданні були додані нові файли: user.js, session.js, authController.js, authRoutes.js, auth.js, authenticate.js, time.js, authValidation.js.
+```
 
-🔧 Основні залежності
-встановити bcrypt командою:
+---
 
-npm i bcrypt
+## 🔧 Основні залежності
 
-встановити cookie-parser командою:
+- `bcrypt` — хешування паролів
+- `nodemailer` — надсилання email
+- `cloudinary` — збереження аватарів
+- `multer` — обробка файлів
+- `celebrate`, `joi` — валідація
 
-npm i cookie-parser
+---
 
-вже встановлені:
+## 🌍 Змінні середовища
 
-express, cors, helmet
-
-mongoose
-
-celebrate, joi
-
-dotenv
-
-nodemon (dev)
-
-🌍 Змінні середовища
-Створіть файл .env у корені проєкту. У ньому мають бути змінні:
-
-Code
+```env
 PORT=3030
 MONGO_URL=<your_mongodb_connection_string>
 NODE_ENV=development
-⚠️ Значення MONGO_URL не публікуйте у README чи репозиторії. Воно має бути доступне лише локально або у Render Environment.
 
-🧑‍💻 Реалізовані модулі
-Моделі
-User: email, password (мін. 8 символів), username (trim), timestamps, toJSON (без пароля).
+JWT_SECRET=<jwt_secret>
+FRONTEND_DOMAIN=http://localhost:3001
 
-Session: userId, accessToken, refreshToken, accessTokenValidUntil, refreshTokenValidUntil.
+CLOUDINARY_CLOUD_NAME=<cloud_name>
+CLOUDINARY_API_KEY=<api_key>
+CLOUDINARY_API_SECRET=<api_secret>
 
-Note: title, content, tag, userId (прив’язка до User), текстовий індекс.
+SMTP_HOST=<brevo_host>
+SMTP_PORT=587
+SMTP_USER=<brevo_user>
+SMTP_PASSWORD=<brevo_password>
+SMTP_FROM=<your_email>
+```
 
-Middleware
-authenticate: перевірка accessToken у cookies, пошук сесії, перевірка терміну дії, додавання req.user.
+---
 
-errorHandler, notFoundHandler, logger.
+## 🧑‍💻 Реалізовані модулі
 
-Сервіси
-auth.js: createSession, setSessionCookies.
+- **Auth**: `requestResetEmail`, `resetPassword`
+- **User**: `updateUserAvatar`
+- **Utils**: `sendEmail`, `saveFileToCloudinary`
+- **Middleware**: `multer` (memoryStorage, 2MB, тільки image/\*)
 
-Валідація
-authValidation.js: registerUserSchema, loginUserSchema.
+---
 
-notesValidation.js: перевірка даних нотаток.
+## 🔐 Реалізовані маршрути
 
-🔐 Реалізовані маршрути
-Auth
-POST /auth/register — реєстрація користувача
+- `POST /auth/request-reset-email` — надсилання листа для скидання паролю
+- `POST /auth/reset-password` — скидання паролю
+- `PATCH /users/me/avatar` — оновлення аватарки
 
-POST /auth/login — логін
+---
 
-POST /auth/logout — вихід
+## 🚨 Обробка помилок
 
-POST /auth/refresh — оновлення сесії
+- 404 — маршрут не знайдено
+- 401 — токен невалідний або прострочений
+- 500 — серверні помилки
 
-Notes (приватні)
-GET /notes — всі нотатки користувача
-
-GET /notes/:noteId — нотатка за ID
-
-POST /notes — створення нотатки
-
-PATCH /notes/:noteId — оновлення нотатки
-
-DELETE /notes/:noteId — видалення нотатки
-
-🚨 Обробка помилок
-404 — маршрут не знайдено
-
-401 — проблеми з токенами/сесіями
-
-500 — серверні помилки
+---
 
 ## ⚠️ Примітка для локальної розробки
 
-У файлі `src/utils/sendEmail.js` використовується тимчасовий фікс для обходу помилки
-`self-signed certificate in certificate chain`, яка виникає локально через антивірус:
+У файлі src/utils/sendEmail.js використовується динамічна TLS‑конфігурація:
 
-secure: false,
+secure: process.env.NODE_ENV === 'production',
 tls: {
-rejectUnauthorized: false, // тимчасово для локальної розробки
+rejectUnauthorized: process.env.NODE_ENV === 'production',
 }
-! ВАЖЛИВО: Перед пушем у репозиторій або деплоєм на продакшн цей рядок треба видалити або закоментувати, щоб не знижувати рівень безпеки TLS‑з’єднання.
+У production завжди використовується строгий режим TLS (безпечне з’єднання).
 
-🚢 Деплой на Render
-Створити Web Service
+У development допускається робота з самопідписаними сертифікатами. Це може бути корисно, якщо локально антивірус або проксі підміняє TLS‑сертифікати і виникає помилка self-signed certificate in certificate chain.
 
-Підключити GitHub-репозиторій (гілка 05-mail-and-img)
+Якщо у вас немає проблем із TLS, цей блок можна не додавати або залишити як є — він не вплине на роботу.
 
-Додати .env у Render Environment
+---
 
-Перевірити роботу маршрутів через Postman
+## 🚢 Деплой на Render
+
+- Створити Web Service
+- Підключити GitHub‑репозиторій (гілка `05-mail-and-img`)
+- Додати `.env` у Render Environment
+- Перевірити роботу маршрутів через Postman
 
 ✅ Успішний деплой підтверджується логом:
 
-Code
-Server is running on port 3030
-
 ```
-
+Server is running on port 3030
 ```
